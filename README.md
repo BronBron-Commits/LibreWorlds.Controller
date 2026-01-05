@@ -72,5 +72,3 @@ This project is used during development to:
 * **Coordinate:** Serve as a launch surface for future clients (Godot, native, mobile).
 
 ---
-
-Would you like me to add a **License** or **Contributing** section to complete the file?
