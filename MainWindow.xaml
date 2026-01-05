@@ -1,43 +1,60 @@
-﻿<Window x:Class="LibreWorlds.Controller.MainWindow"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:views="clr-namespace:LibreWorlds.Controller.Views"
-        Title="LibreWorlds Control Tower"
-        Width="600"
-        Height="300">
+﻿<Window
+    x:Class="LibreWorlds.Controller.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    Title="LibreWorlds Controller"
+    Width="600"
+    Height="400">
 
-    <DockPanel>
+    <StackPanel Margin="20" HorizontalAlignment="Center">
 
-        <StackPanel DockPanel.Dock="Bottom"
-                    Orientation="Horizontal"
-                    HorizontalAlignment="Center"
-                    Margin="10">
+        <TextBlock
+            Text="LibreWorlds Controller"
+            FontSize="24"
+            FontWeight="Bold"
+            Margin="0,0,0,20"/>
 
-            <Button Content="Start Session"
-                    Width="120"
-                    Margin="5"
-                    Click="Start_Click"/>
-
-            <Button Content="Stop"
-                    Width="120"
-                    Margin="5"
-                    Click="Stop_Click"/>
-        </StackPanel>
-
+        <!-- Subsystem Panel -->
         <ItemsControl ItemsSource="{Binding Subsystems}">
-            <ItemsControl.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <StackPanel Orientation="Horizontal"
-                                HorizontalAlignment="Center"/>
-                </ItemsPanelTemplate>
-            </ItemsControl.ItemsPanel>
-
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
-                    <views:SubsystemPanel/>
+                    <StackPanel Orientation="Horizontal" Margin="0,5">
+
+                        <!-- Status Light -->
+                        <Ellipse
+                            Width="16"
+                            Height="16"
+                            Fill="{Binding StateBrush}"
+                            Margin="0,0,10,0"/>
+
+                        <!-- Name -->
+                        <TextBlock
+                            Text="{Binding Name}"
+                            Width="150"/>
+
+                        <!-- State -->
+                        <TextBlock
+                            Text="{Binding StateText}"
+                            FontWeight="Bold"/>
+                    </StackPanel>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
         </ItemsControl>
 
-    </DockPanel>
+        <Separator Margin="0,20"/>
+
+        <!-- Controls -->
+        <Button
+            Content="Start Session"
+            Width="140"
+            Margin="0,5"
+            Click="Start_Click"/>
+
+        <Button
+            Content="Stop Session"
+            Width="140"
+            Margin="0,5"
+            Click="Stop_Click"/>
+
+    </StackPanel>
 </Window>

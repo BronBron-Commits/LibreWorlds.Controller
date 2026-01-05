@@ -10,12 +10,9 @@ namespace LibreWorlds.Controller
         public MainWindow()
         {
             InitializeComponent();
-
             _viewModel = new MainViewModel();
             DataContext = _viewModel;
         }
-
-        // ---- Button handlers ----
 
         private void Start_Click(object sender, RoutedEventArgs e)
         {

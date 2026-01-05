@@ -1,4 +1,8 @@
+#nullable enable
+using System;
 using System.ComponentModel;
+using System.Runtime.CompilerServices;
+using System.Windows.Media;
 
 namespace LibreWorlds.Controller.Models
 {
@@ -14,26 +18,43 @@ namespace LibreWorlds.Controller.Models
     {
         public string Name { get; }
 
-        private SubsystemState _state;
+        private SubsystemState _state = SubsystemState.Offline;
         public SubsystemState State
         {
             get => _state;
             set
             {
-                if (_state != value)
-                {
-                    _state = value;
-                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(State)));
-                }
+                if (_state == value)
+                    return;
+
+                _state = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(StateText));
+                OnPropertyChanged(nameof(StateBrush));
             }
         }
+
+        public string StateText => State.ToString();
+
+        public Brush StateBrush => State switch
+        {
+            SubsystemState.Offline => Brushes.DarkGray,
+            SubsystemState.Starting => Brushes.Goldenrod,
+            SubsystemState.Active => Brushes.LimeGreen,
+            SubsystemState.Error => Brushes.Red,
+            _ => Brushes.Black
+        };
 
         public SubsystemModel(string name)
         {
             Name = name;
-            State = SubsystemState.Offline;
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;
+
+        private void OnPropertyChanged([CallerMemberName] string? name = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+        }
     }
 }

@@ -1,17 +1,21 @@
-﻿using System.Collections.ObjectModel;
+﻿#nullable enable
+using System.Collections.ObjectModel;
 using LibreWorlds.Controller.Models;
-using LibreWorlds.WorldAdapter;
+
+// IMPORTANT:
+// Do NOT rely on "using LibreWorlds.WorldAdapter" for the type
+// We will fully-qualify it to avoid namespace collisions
 
 namespace LibreWorlds.Controller.ViewModels
 {
     public sealed class MainViewModel
     {
-        // ---- Subsystem models (UI lights) ----
+        // ---- Subsystems ----
         public SubsystemModel WorldAdapterSubsystem { get; }
 
         public ObservableCollection<SubsystemModel> Subsystems { get; }
 
-        // ---- Real adapter (authoritative) ----
+        // ---- Adapter (FULLY QUALIFIED TYPE) ----
         private readonly LibreWorlds.WorldAdapter.WorldAdapter _worldAdapter;
 
         public MainViewModel()
@@ -24,36 +28,35 @@ namespace LibreWorlds.Controller.ViewModels
             };
 
             var engine = new RealmlibWorldEngine();
-            _worldAdapter = new LibreWorlds.WorldAdapter.WorldAdapter(engine);
 
+            _worldAdapter = new LibreWorlds.WorldAdapter.WorldAdapter(engine);
             _worldAdapter.StateChanged += OnWorldAdapterStateChanged;
         }
 
-        // ---- Adapter → UI binding ----
-        private void OnWorldAdapterStateChanged(WorldAdapterState state)
+        private void OnWorldAdapterStateChanged(
+            LibreWorlds.WorldAdapter.WorldAdapterState state)
         {
-            WorldAdapterSubsystem.State = MapAdapterState(state);
-        }
-
-        private static SubsystemState MapAdapterState(WorldAdapterState state)
-        {
-            return state switch
+            WorldAdapterSubsystem.State = state switch
             {
-                WorldAdapterState.Offline => SubsystemState.Offline,
-                WorldAdapterState.Starting => SubsystemState.Starting,
-                WorldAdapterState.Connected => SubsystemState.Active,
-                WorldAdapterState.Authenticating => SubsystemState.Starting,
-                WorldAdapterState.Authenticated => SubsystemState.Active,
-                WorldAdapterState.EnteringWorld => SubsystemState.Starting,
-                WorldAdapterState.InWorld => SubsystemState.Active,
-                _ => SubsystemState.Offline
+                LibreWorlds.WorldAdapter.WorldAdapterState.Offline => SubsystemState.Offline,
+                LibreWorlds.WorldAdapter.WorldAdapterState.Starting => SubsystemState.Starting,
+                LibreWorlds.WorldAdapter.WorldAdapterState.Connected => SubsystemState.Active,
+                LibreWorlds.WorldAdapter.WorldAdapterState.Authenticating => SubsystemState.Starting,
+                LibreWorlds.WorldAdapter.WorldAdapterState.Authenticated => SubsystemState.Active,
+                LibreWorlds.WorldAdapter.WorldAdapterState.EnteringWorld => SubsystemState.Starting,
+                LibreWorlds.WorldAdapter.WorldAdapterState.InWorld => SubsystemState.Active,
+                LibreWorlds.WorldAdapter.WorldAdapterState.Stopping => SubsystemState.Starting,
+                _ => SubsystemState.Error
             };
         }
 
-        // ---- UI commands ----
+        // ---- UI Commands ----
+
         public void StartSession()
         {
             _worldAdapter.Start();
+            _worldAdapter.Authenticate();
+            _worldAdapter.EnterWorld();
         }
 
         public void StopSession()
